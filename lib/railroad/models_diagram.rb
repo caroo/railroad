@@ -65,9 +65,9 @@ class ModelsDiagram < AppDiagram
 
         # Collect model's content columns
 
-	content_columns = current_class.content_columns
-	
-	if @options.hide_magic 
+        content_columns = current_class.content_columns
+        
+        if @options.hide_magic 
           # From patch #13351
           # http://wiki.rubyonrails.org/rails/pages/MagicFieldNames
           magic_fields = [

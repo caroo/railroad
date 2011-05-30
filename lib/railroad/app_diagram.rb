@@ -35,7 +35,7 @@ class AppDiagram
     
     if @options.xmi 
         STDERR.print "Generating XMI diagram\n" if @options.verbose
-    	STDOUT.print @graph.to_xmi
+        STDOUT.print @graph.to_xmi
     else
         STDERR.print "Generating DOT graph\n" if @options.verbose
         STDOUT.print @graph.to_dot 
