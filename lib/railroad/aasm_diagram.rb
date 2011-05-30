@@ -7,9 +7,11 @@
 # AASM code provided by Ana Nelson (http://ananelson.com/)
 
 require 'railroad/app_diagram'
+require 'railroad/models_diagram_shared'
 
 # Diagram for Acts As State Machine
 class AasmDiagram < AppDiagram
+  include ModelsDiagramShared
 
   def initialize(options)
     #options.exclude.map! {|e| e = "app/models/" + e}
@@ -19,42 +21,15 @@ class AasmDiagram < AppDiagram
     @habtm = []
   end
 
-  # Process model files
-  def generate
-    STDERR.print "Generating AASM diagram\n" if @options.verbose
-    files = Dir.glob("app/models/**/*.rb") 
-    files += Dir.glob("vendor/plugins/**/app/models/*.rb") if @options.plugins_models
-    files -= @options.exclude
-    files.each do |f| 
-      process_class extract_class_name(f).constantize
-    end
-  end
-  
   private
   
-  # Load model classes
-  def load_classes
-    begin
-      disable_stdout
-      files = Dir.glob("app/models/**/*.rb")
-      files += Dir.glob("vendor/plugins/**/app/models/*.rb") if @options.plugins_models
-      files -= @options.exclude                  
-      files.each {|m| require m }
-      enable_stdout
-    rescue LoadError
-      enable_stdout
-      print_error "model classes"
-      raise
-    end
-  end  # load_classes
-
   # Process a model class
   def process_class(current_class)
     
     STDERR.print "\tProcessing #{current_class}\n" if @options.verbose
     
     # Only interested in acts_as_state_machine models.
-    return unless current_class.respond_to?'states'
+    return unless current_class.respond_to?('states')
     
     node_attribs = []
     node_type = 'aasm'
@@ -76,6 +51,5 @@ class AasmDiagram < AppDiagram
         ]
       end
     end
-  end # process_class
-
-end # class AasmDiagram
+  end
+end

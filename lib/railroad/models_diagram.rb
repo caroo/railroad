@@ -5,9 +5,11 @@
 # See COPYING for more details
 
 require 'railroad/app_diagram'
+require 'railroad/models_diagram_shared'
 
 # RailRoad models diagram
 class ModelsDiagram < AppDiagram
+  include ModelsDiagramShared
 
   def initialize(options)
     #options.exclude.map! {|e| "app/models/" + e}
@@ -17,34 +19,7 @@ class ModelsDiagram < AppDiagram
     @habtm = []
   end
 
-  # Process model files
-  def generate
-    STDERR.print "Generating models diagram\n" if @options.verbose
-    files = Dir.glob("app/models/**/*.rb")
-    files += Dir.glob("vendor/plugins/**/app/models/*.rb") if @options.plugins_models    
-    files -= @options.exclude
-    files.each do |f| 
-      process_class extract_class_name(f).constantize
-    end
-  end 
-
   private
-
-  # Load model classes
-  def load_classes
-    begin
-      disable_stdout
-      files = Dir.glob("app/models/**/*.rb")
-      files += Dir.glob("vendor/plugins/**/app/models/*.rb") if @options.plugins_models
-      files -= @options.exclude
-      files.each {|m| require m }
-      enable_stdout
-    rescue LoadError
-      enable_stdout
-      print_error "model classes"
-      raise
-    end
-  end  # load_classes
 
   # Process a model class
   def process_class(current_class)
@@ -117,7 +92,7 @@ class ModelsDiagram < AppDiagram
       @graph.add_edge ['is-a', current_class.superclass.name, current_class.name]
     end      
 
-  end # process_class
+  end
 
   # Process a model association
   def process_association(class_name, assoc)
@@ -150,6 +125,5 @@ class ModelsDiagram < AppDiagram
     # from patch #12384    
     # @graph.add_edge [assoc_type, class_name, assoc.class_name, assoc_name]
     @graph.add_edge [assoc_type, class_name, assoc_class_name, assoc_name]    
-  end # process_association
-
-end # class ModelsDiagram
+  end
+end
