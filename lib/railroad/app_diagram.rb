@@ -79,6 +79,7 @@ class AppDiagram
   def load_environment
     begin
       disable_stdout
+      $: << '.'
       require "config/environment"
       enable_stdout
     rescue LoadError
